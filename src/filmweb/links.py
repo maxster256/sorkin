@@ -6,7 +6,7 @@ class LinksFetcher:
         self.domain = "https://www.filmweb.pl"
         self.reviewsPath = "https://filmweb.pl/reviews?page="
         # self.searchPath = "https://www.filmweb.pl/films/search?orderBy=popularity&descending=true&page="
-        self.searchPath = "https://www.filmweb.pl/films/search?orderBy=popularity&descending=false&startCount=70000&page="
+        # self.searchPath = "https://www.filmweb.pl/films/search?orderBy=popularity&descending=false&startCount=70000&page="
 
     def getReviewLinksFromPages(self, fromPage, toPage):
         links = set()
@@ -43,17 +43,17 @@ class LinksFetcher:
         except AssertionError as error:
             print("Error when fetching links from page {}: '{}'".format(pageNumber, error))
 
-    def getLinksToMoviesFromSearchPages(self, fromPage, toPage):
+    def getLinksToMoviesFromSearchPages(self, fromPage, toPage, searchPath):
         links = set()
         
         for page in range(fromPage, toPage):
             print("Downloading links to movies from page {}/{}...".format(page, toPage))
-            links.update(self.getLinksToMoviesFromSearchPage(page))
+            links.update(self.getLinksToMoviesFromSearchPage(page, searchPath))
         
         return links
 
-    def getLinksToMoviesFromSearchPage(self, pageNumber):
-        r = requests.get(self.searchPath + str(pageNumber), headers={"User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"})
+    def getLinksToMoviesFromSearchPage(self, pageNumber, searchPath):
+        r = requests.get(searchPath + str(pageNumber), headers={"User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"})
         parser = BeautifulSoup(r.text, 'html.parser')
 
         movie_links = []

@@ -11,6 +11,7 @@ class MongoWorker:
         self.client = MongoClient(config.mongo_string)
         self.filmweb_db = self.client.filmweb
         self.users_db = self.client.users
+        self.users_series_db = self.client.series
         self.linksFetcher = LinksFetcher()
         self.reviewsFetcher = ReviewsFetcher()
 
@@ -26,9 +27,21 @@ class MongoWorker:
 
         return links
 
+    def storeLinksAndReviewOfShowsByUsers(self, start, limit):
+        """Convenience method"""
+        show_pages = self.linksFetcher.getLinksToMoviesFromSearchPages(start, limit, "https://www.filmweb.pl/serials/search?orderBy=popularity&descending=true&page=")
+
+        review_links = []
+        for page in show_pages:
+            review_links.extend(self.linksFetcher.getLinksToReviewsFromMoviePage(page))
+
+        links = self.getNewLinks(review_links, self.users_series_db.links)
+
+        self.storeLinksAndReviews(links, self.users_series_db.rated, self.users_series_db.not_rated, self.users_series_db.links, self.users_series_db.invalid_links)
+
     def storeLinksAndReviewsByUsers(self, start, limit):
         """Convenience method"""
-        movie_pages = self.linksFetcher.getLinksToMoviesFromSearchPages(start, limit)
+        movie_pages = self.linksFetcher.getLinksToMoviesFromSearchPages(start, limit, "https://www.filmweb.pl/films/search?orderBy=popularity&descending=true&page=")
         review_links = []
 
         for page in movie_pages:
@@ -116,4 +129,5 @@ class MongoWorker:
         return bulk_documents
 
 worker = MongoWorker()
-worker.storeLinksAndReviewsByUsers(1, 1001)
+# worker.storeLinksAndReviewsByUsers(1, 1001)
+worker.storeLinksAndReviewOfShowsByUsers(1, 3)
