@@ -15,6 +15,12 @@ class MongoWorker:
         self.linksFetcher = LinksFetcher()
         self.reviewsFetcher = ReviewsFetcher()
 
+    def storeLinksAndReviewsByUsersFromAjax(self, start, limit):
+        """Convenience method"""
+        links = self.getNewLinks(self.linksFetcher.getUserReviewLinksFromAjaxPages(start, limit), self.users_db.links)
+
+        self.storeLinksAndReviews(links, self.users_db.rated, self.users_db.not_rated, self.users_db.links, self.users_db.invalid_links)
+
     def getNewLinks(self, links, collection):
         """Returns a list of not downloaded links from a given links list and a collection"""
         # links = self.linksFetcher.getReviewLinksFromPages(fromPage, toPage)
@@ -112,6 +118,12 @@ class MongoWorker:
         reviews.extend(list(self.users_db.rated.find()))
         return reviews
 
+    def getUnratedReviews(self):
+        """Downloads all the unrated reviews from the database"""
+        reviews = list(self.filmweb_db.not_rated.find())
+        reviews.extend(list(self.users_db.not_rated.find()))
+        return reviews
+
     def createDocumentsFromReviews(self, reviews):
         bulk_documents = []
         for review in reviews:
@@ -128,6 +140,9 @@ class MongoWorker:
         
         return bulk_documents
 
-worker = MongoWorker()
+# worker = MongoWorker()
 # worker.storeLinksAndReviewsByUsers(1, 1001)
-worker.storeLinksAndReviewOfShowsByUsers(1, 3)
+# worker.storeLinksAndReviewOfShowsByUsers(1, 1001)
+# worker.storeLinksAndReviewsByFilmweb(1, 10)
+
+# worker.storeLinksAndReviewsByUsersFromAjax(1, 708)

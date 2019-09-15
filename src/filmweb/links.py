@@ -6,7 +6,36 @@ class LinksFetcher:
         self.domain = "https://www.filmweb.pl"
         self.reviewsPath = "https://filmweb.pl/reviews?page="
         # self.searchPath = "https://www.filmweb.pl/films/search?orderBy=popularity&descending=true&page="
-        # self.searchPath = "https://www.filmweb.pl/films/search?orderBy=popularity&descending=false&startCount=70000&page="
+        self.searchPath = "https://www.filmweb.pl/films/search?endRate=3&orderBy=popularity&descending=true&startRate=2&page="
+        self.ajaxPath = "https://www.filmweb.pl/ajax/film/user/reviews/"
+
+    
+    def getUserReviewLinksFromAjaxPages(self, fromPage, toPage):
+        links = set()
+
+        for page in range(fromPage, toPage):
+            print("Downloading links from AJAX page {}/{}...".format(page, toPage))
+            links.update(self.getUserReviewLinksFromAjaxPage(page))
+        
+        return links
+
+    def getUserReviewLinksFromAjaxPage(self, pageNumber):
+        r = requests.get(self.ajaxPath + str(pageNumber))
+        parser = BeautifulSoup(r.text, 'html.parser')
+
+        results = set()
+        try:
+            links = parser.find_all(class_="review__title")
+            
+            for link_wrapper in links:
+                link = link_wrapper.find("a")
+                if link:
+                    results.add(link.attrs['href'])
+
+            return results
+        except Exception as error:
+            print(error)
+            pass
 
     def getReviewLinksFromPages(self, fromPage, toPage):
         links = set()
@@ -94,3 +123,4 @@ class LinksFetcher:
 # lf = LinksFetcher()
 # print(lf.getLinksToMoviesFromSearchPages(1, 2))
 # print(lf.getLinksToReviewsFromMoviePage("/film/Witaj+w+klubie-2013-657859"))
+# print(lf.getUserReviewLinksFromAjaxPages(1, 5))

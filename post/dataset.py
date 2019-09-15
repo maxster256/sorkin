@@ -7,11 +7,11 @@ def add_sentiment(dataframe):
     Adds a sentiment class to the dataset based on the rating given by the reviewer.
     """
     def determine_sentiment(row):
-        if row['rating'] in [1, 2, 3]:
+        if row['rating'] in [1, 2, 3, 4]:
             return "negative"
-        elif row['rating'] in [4, 5, 6]:
+        elif row['rating'] in [5, 6, 7]:
             return "neutral"
-        elif row['rating'] in [7, 8, 9, 10]:
+        elif row['rating'] in [8, 9, 10]:
             return "positive"
             
     dataframe['sentiment'] = dataframe.apply(lambda row: determine_sentiment(row), axis=1)
