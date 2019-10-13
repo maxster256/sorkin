@@ -2,7 +2,7 @@ from links import LinksFetcher
 from reviews import ReviewsFetcher
 
 lf = LinksFetcher()
-links = lf.getReviewLinksFromPages(1, 2)
+links = lf.get_review_links_from_pages(1, 2)
 
 rf = ReviewsFetcher()
 

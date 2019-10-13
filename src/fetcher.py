@@ -19,7 +19,7 @@ def add_sentiment(dataframe):
 
 worker = MongoWorker()
 # reviews = worker.getRatedReviews()
-reviews = worker.getUnratedReviews()
+reviews = worker.get_not_rated_reviews()
 
 df = pd.DataFrame(reviews)
 
