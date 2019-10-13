@@ -104,3 +104,5 @@ class MongoWorker:
         :return: list of reviews
         """
         return list(self.filmweb_db.not_rated.find()).extend(list(self.users_db.not_rated.find()))
+
+
